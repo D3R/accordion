@@ -1,6 +1,7 @@
 {
   "name": "d3r-accordion",
   "version": "1.0.0",
+  "license": "Proprietary",
   "description": "Accordion",
   "repository": "https://github.com/D3R/accordion.git",
   "bugs": "https://github.com/D3R/accordion/issues",
