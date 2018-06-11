@@ -1,0 +1,32 @@
+.accordion {}
+
+.accordion--active {}
+
+    .accordion__head {
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+
+    .accordion__wrap {
+        display: none;
+
+        .accordion--animate & {
+            display: block;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .5s ease;
+        }
+    }
+
+    .accordion--active .accordion__wrap {
+        display: block;
+
+        .accordion--animate & {
+            max-height: none;
+        }
+    }
+
+        .accordion__body {
+            padding: 20px;
+            border: 1px dashed green;
+        }
