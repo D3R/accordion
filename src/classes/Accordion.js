@@ -1,5 +1,6 @@
 import jump from 'jump.js'
 import debounce from 'debounce';
+import elementClosest from 'element-closest';
 
 /**
  * Accordion plugin
@@ -53,7 +54,7 @@ export class Accordion
         // On click
         this.delegate('click', '.js-accordion', (e) => {
 
-            const element = e.target.parentNode;
+            const element = e.parentNode;
 
             if (element.classList.contains('accordion--active')) {
                 this.deactivate(element, true);
@@ -122,8 +123,12 @@ export class Accordion
     delegate(event, selector, callback)
     {
         document.addEventListener(event, (e) => {
-            if (e.target && (e.target.matches(selector) || e.target.closest(selector))) {
-                callback(e);
+            if (e.target) {
+                if (e.target.matches(selector)) {
+                    callback(e.target);
+                } else if (e.target.closest(selector)) {
+                    callback(e.target.closest(selector));
+                }
             }
         });
     }
