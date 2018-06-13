@@ -52,7 +52,7 @@ export class Accordion
      */
     bind() {
         // On click
-        this.delegate('click', '.js-accordion', (e) => {
+        this.delegate('click', this.options.selector, (e) => {
 
             const element = e.parentNode;
 
@@ -257,11 +257,34 @@ export class Accordion
     }
 
     /**
-     * Trigger an accordion externally
+     * Click an accordion externally
      *
      * @param {Element} element
      */
-    trigger(element) {
-        element.querySelector('.js-accordion').click();
+    triggerClick(element) {
+        element.querySelector(this.options.selector).click();
+    }
+
+    /**
+     * Show an accordion externally
+     *
+     * @param {Element} element
+     */
+    triggerShow(element) {
+        if (!element.classList.contains('accordion--active')) {
+            // If the accordion is deactivate, activate it
+            element.querySelector(this.options.selector).click();
+        } else {
+            // Otherwise, show the accordion
+            if (this.options.scrollTo) {
+                if (this.options.animate) {
+                    jump(element, {
+                        duration: this.options.scrollDuration
+                    })
+                } else {
+                    window.scrollTo(0, element.offsetTop);
+                }
+            }
+        }
     }
 }
