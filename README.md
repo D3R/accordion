@@ -1,7 +1,9 @@
-# accordion
+# Accordion
 Simple accordion package
 
 # Recommended markup
+
+## Single
 A single accordion.
 
 ```
@@ -22,6 +24,7 @@ var accordion = new Accordion({
 });
 ```
 
+## List
 A list of accordions. When an accordion is opened, any currently open accordions are closed.
 
 ```
@@ -59,6 +62,7 @@ var accordion = new Accordion({
 });
 ```
 
+## Groups
 A list of accordions, split into groups. When an accordion is opened, any currently open accordions that belong to the same group (e.g. group_1, group_2) are closed.
 
 ```
