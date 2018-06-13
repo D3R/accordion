@@ -1,4 +1,4 @@
-import assign from 'core-js/fn/object/assign';
+import 'core-js';
 import {Accordion} from './classes/Accordion.js';
 
 window.Accordion = Accordion;
