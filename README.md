@@ -55,7 +55,7 @@ A list of accordions.
 var accordion = new Accordion({
     selector: '.js-accordion',
     selectorTrigger: '.js-accordion__trigger',
-    limit: 'page'
+    limit: 'all'
 });
 ```
 
@@ -121,3 +121,22 @@ var accordion = new Accordion({
     limit: 'group'
 });
 ```
+
+# Options
+
+Option | Type | default | Description
+--- | --- | --- | --- |
+selector | selector | '.js-accordion' | The element that is the base of the accordion
+selectorTrigger | selector | '.js-accordion__trigger' | The element that acts as the trigger within the accordion, ideally within the top of the *selector*
+limit | string | null | Determine if currently open accordions should be closed when a new one is opened. 'group' affects those within the same group, 'all' affects all within the instance of the plugin, null ignores this
+scrollTo | boolean | true | Should the opened accordion be scrolled into view?
+preDelay | int | 1 | Time elapsed before the accordion opens or closes
+postDelay | int | 500 | Time elapsed before the *afterOpen* or *afterClose* function is called
+scrollDuration | int | 500 | Time elapsed for the accordion to be scrolled into view
+openOnLoad | boolean, object | false | Should an accordion be opened on load? If the boolean value is true, then the first item is opened. If a valid element selector is provided, then this item is opened
+animate | boolean | true | Should the accordion use animations?
+beforeOpen | function | empty | A function to be called before the accordion is opened
+afterOpen | function | empty | A function to be called after the accordion is opened
+beforeClose | function | empty | A function to be called before the accordion is closed
+afterClose | function | empty | A function to be called after the accordion is closed
+afterResize | function | empty | A function to be called after the window has been resized
