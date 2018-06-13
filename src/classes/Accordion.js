@@ -14,23 +14,25 @@ export class Accordion
      */
     constructor(options) {
         this.default = {
+            selector: '.js-accordion',
+            selectorTrigger: '.js-accordion__trigger',
             limit: null,
             scrollTo: true,
-            beforeOpen: function() {},
-            afterOpen: function() {},
-            beforeClose: function() {},
-            afterClose: function() {},
-            afterResize: function() {},
             preDelay: 1,
             postDelay: 500,
             scrollDuration: 500,
             openOnLoad: false,
-            animate: true
+            animate: true,
+            beforeOpen: function() {},
+            afterOpen: function() {},
+            beforeClose: function() {},
+            afterClose: function() {},
+            afterResize: function() {}
         };
 
         this.options = Object.assign({}, this.default, options);
 
-        this.element = document.querySelectorAll('.accordion');
+        this.element = document.querySelectorAll(this.options.selector);
 
         this.checkAnimation();
         this.bind();
@@ -51,8 +53,12 @@ export class Accordion
      * Bind all relevant events
      */
     bind() {
+
+        // On page load
+        this.loaded();
+
         // On click
-        this.delegate('click', this.options.selector, (e) => {
+        this.delegate('click', this.options.selectorTrigger, (e) => {
 
             const element = e.parentNode;
 
@@ -63,29 +69,31 @@ export class Accordion
             }
         });
 
-        // On page load
-        window.onload = (e) => {
-            if (window.location.hash) {
-                // If there is a URL hash, and the element concerned is an accordion, then activate it
-                if (document.querySelector(window.location.hash).classList.contains('accordion')) {
-                    this.activate(document.querySelector(window.location.hash));
-                }
-            } else if (this.options.openOnLoad) {
-                if (typeof this.options.openOnLoad == 'boolean' && this.options.openOnLoad) {
-                    // If openOnLoad is set to true, then activate the first accordion on the page
-                    this.activate(this.element[0]);
-                } else if (typeof this.options.openOnLoad == 'object') {
-                    // If openOnLoad is an object, and the element concerned is an accordion, then activate it
-                    if (this.options.openOnLoad.classList.contains('accordion')) {
-                        this.activate(this.options.openOnLoad);
-                    }
-                }
-            }
-        }
-
         // On window resize
         if (typeof this.options.afterResize == 'function') {
             window.onresize = debounce(this.options.afterResize, 200);
+        }
+    }
+
+    /**
+     * Kick things off
+     */
+    loaded() {
+        if (window.location.hash) {
+            // If there is a URL hash, and the element concerned is an accordion, then activate it
+            if (document.querySelector(window.location.hash).classList.contains('accordion')) {
+                this.activate(document.querySelector(window.location.hash));
+            }
+        } else if (this.options.openOnLoad) {
+            if (typeof this.options.openOnLoad == 'boolean' && this.options.openOnLoad) {
+                // If openOnLoad is set to true, then activate the first accordion on the page
+                this.activate(this.element[0]);
+            } else if (typeof this.options.openOnLoad == 'object') {
+                // If openOnLoad is an object, and the element concerned is an accordion, then activate it
+                if (this.options.openOnLoad.classList.contains('accordion')) {
+                    this.activate(this.options.openOnLoad);
+                }
+            }
         }
     }
 
@@ -262,7 +270,7 @@ export class Accordion
      * @param {Element} element
      */
     triggerClick(element) {
-        element.querySelector(this.options.selector).click();
+        element.querySelector(this.options.selectorTrigger).click();
     }
 
     /**
@@ -273,7 +281,7 @@ export class Accordion
     triggerShow(element) {
         if (!element.classList.contains('accordion--active')) {
             // If the accordion is deactivate, activate it
-            element.querySelector(this.options.selector).click();
+            element.querySelector(this.options.selectorTrigger).click();
         } else {
             // Otherwise, show the accordion
             if (this.options.scrollTo) {
