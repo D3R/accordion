@@ -22,7 +22,7 @@ var accordion = new Accordion({
 });
 ```
 
-A list of accordions.
+A list of accordions. When an accordion is opened, any currently open accordions are closed.
 
 ```
 <div class="accordion js-accordion>
@@ -59,7 +59,7 @@ var accordion = new Accordion({
 });
 ```
 
-A list of accordions, split into groups.
+A list of accordions, split into groups. When an accordion is opened, any currently open accordions that belong to the same group (e.g. group_1, group_2) are closed.
 
 ```
 <h1>Group 1</h1>
