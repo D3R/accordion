@@ -34,6 +34,10 @@ export class Accordion
 
         this.element = document.querySelectorAll(this.options.selector);
 
+        if (this.element.length == 0) {
+            return;
+        }
+
         this.checkAnimation();
         this.bind();
     }
