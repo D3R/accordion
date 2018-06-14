@@ -1,10 +1,16 @@
-.accordion {}
+.accordion {
+
+    & + .accordion {
+        margin-top: 1px;
+    }
+}
 
 .accordion--active {}
 
     .accordion__head {
-        margin-bottom: 20px;
+        padding: 10px 20px;
         cursor: pointer;
+        background: $c-accordion-bg;
     }
 
     .accordion__wrap {
@@ -27,6 +33,7 @@
     }
 
         .accordion__body {
+            margin-top: 1px;
             padding: 20px;
-            border: 1px dashed green;
+            background: $c-accordion-bg;
         }
