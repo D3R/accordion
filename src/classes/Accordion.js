@@ -23,10 +23,11 @@ export class Accordion
             scrollDuration: 500,
             openOnLoad: false,
             animate: true,
-            beforeOpen: function() {},
-            afterOpen: function() {},
-            beforeClose: function() {},
-            afterClose: function() {},
+            toggling: true,
+            beforeOpen: function(element) {},
+            afterOpen: function(element) {},
+            beforeClose: function(element) {},
+            afterClose: function(element) {},
             afterResize: function() {}
         };
 
@@ -64,12 +65,16 @@ export class Accordion
         // On click
         this.delegate('click', this.options.selectorTrigger, (e) => {
 
-            const element = e.parentNode;
+            let element = e.parentNode;
 
-            if (element.classList.contains('accordion--active')) {
-                this.deactivate(element, true);
-            } else {
+            if (e.getAttribute('data-target')) {
+                element = document.querySelector(e.getAttribute('data-target'));
+            }
+
+            if (!element.classList.contains('accordion--active')) {
                 this.activate(element, true);
+            } else if (this.options.toggling) {
+                this.deactivate(element, true);
             }
         });
 
@@ -158,7 +163,7 @@ export class Accordion
             this.closeOthers();
         }
         if (typeof this.options.beforeOpen == 'function' && clicked) {
-            this.options.beforeOpen();
+            this.options.beforeOpen(element);
         }
     }
 
@@ -169,6 +174,10 @@ export class Accordion
      */
     open(element, clicked) {
         let self = this;
+
+        if (element.classList.contains('accordion--active')) {
+            return;
+        }
 
         setTimeout(function() {
             element.classList.add('accordion--active');
@@ -195,7 +204,7 @@ export class Accordion
             }
             if (clicked) {
                 if (typeof self.options.afterOpen == 'function') {
-                    self.options.afterOpen();
+                    self.options.afterOpen(element);
                 }
                 if (self.options.scrollTo && self.options.animate) {
                     jump(element, {
@@ -213,7 +222,7 @@ export class Accordion
      */
     beforeClose(element, clicked) {
         if (clicked && typeof this.options.beforeClose == 'function') {
-            this.options.beforeClose();
+            this.options.beforeClose(element);
         }
         if (this.options.animate) {
             element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
@@ -246,7 +255,7 @@ export class Accordion
 
         setTimeout(function() {
             if (clicked && typeof self.options.afterClose == 'function') {
-                self.options.afterClose();
+                self.options.afterClose(element);
             }
         }, this.options.postDelay);
     }
