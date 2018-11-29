@@ -27,7 +27,7 @@ var accordion = new Accordion({
 ## List
 A list of accordions. When an accordion is opened, any currently open accordions are closed.
 
-```
+```html
 <div class="accordion js-accordion>
     <div class="accordion__head js-accordion__trigger">Accordion title 1</div>
     <div class="accordion__wrap">
@@ -65,7 +65,7 @@ var accordion = new Accordion({
 ## Groups
 A list of accordions, split into groups. When an accordion is opened, any currently open accordions that belong to the same group (e.g. group_1, group_2) are closed.
 
-```
+```html
 <h1>Group 1</h1>
 <div class="accordion js-accordion>
     <div class="accordion__head js-accordion__trigger" data-accordion-group="group_1">Accordion title 1.1</div>
@@ -139,6 +139,7 @@ postDelay | int | 500 | Time elapsed before the *afterOpen* or *afterClose* func
 scrollDuration | int | 500 | Time elapsed for the accordion to be scrolled into view
 openOnLoad | boolean, object | false | Should an accordion be opened on load? If the boolean value is true, then the first item is opened. If a valid element selector is provided, then this item is opened
 animate | boolean | true | Should the accordion use animations?
+toggling | boolean | true | Can an accordion be closed by clicking on it when it is open
 beforeOpen | function | empty | A function to be called before the accordion is opened
 afterOpen | function | empty | A function to be called after the accordion is opened
 beforeClose | function | empty | A function to be called before the accordion is closed
