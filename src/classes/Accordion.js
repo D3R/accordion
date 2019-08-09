@@ -24,6 +24,7 @@ export class Accordion
             openOnLoad: false,
             animate: true,
             toggling: true,
+            disable: null,
             beforeOpen: function(element) {},
             afterOpen: function(element) {},
             beforeClose: function(element) {},
@@ -34,6 +35,11 @@ export class Accordion
         this.options = Object.assign({}, this.default, options);
 
         this.element = document.querySelectorAll(this.options.selector);
+
+        this.breakpoint = {
+            old: null,
+            new: window.matchMedia(this.options.disable).matches
+        };
 
         if (this.element.length == 0) {
             return;
@@ -58,12 +64,51 @@ export class Accordion
      * Bind all relevant events
      */
     bind() {
+        var valid = true;
 
-        // On page load
-        this.loaded();
+        if (this.options.disable) {
+            setTimeout(() => {
+                if (this.breakpoint.old != window.matchMedia(this.options.disable).matches) {
+                    if (!this.active) {
+                        this.active = this.getActiveElements();
+                    }
+
+                    if (!window.matchMedia(this.options.disable).matches) {
+                        if (this.active) {
+                            this.element.forEach((e) => {
+                                e.classList.add('accordion--invalid');
+                                setTimeout(() => {
+                                    e.querySelector('.accordion__wrap').style.maxHeight = null;
+                                }, this.options.preDelay + this.options.postDelay);
+                            });
+                            this.active.forEach((e) => {
+                                this.deactivate(e);
+                            });
+                        }
+                    }
+                }
+
+                this.breakpoint.old = window.matchMedia(this.options.disable).matches;
+            }, this.options.preDelay + this.options.postDelay);
+        }
+
+        if (valid) {
+            // On page load
+            this.loaded();
+        }
 
         // On click
         this.delegate('click', this.options.selectorTrigger, (e) => {
+
+            if (this.options.disable) {
+                if (!window.matchMedia(this.options.disable).matches) {
+                    return;
+                }
+            }
+
+            if (!valid) {
+                return;
+            }
 
             let element = e.parentNode;
 
@@ -79,9 +124,22 @@ export class Accordion
         });
 
         // On window resize
-        if (typeof this.options.afterResize == 'function') {
-            window.onresize = debounce(this.options.afterResize, 200);
-        }
+        window.onresize = debounce(this.resized.bind(this), 200);
+    }
+
+    /**
+     * Get the active items within the group
+     */
+    getActiveElements() {
+        let active = [];
+
+        this.element.forEach((e) => {
+            if (e.classList.contains('accordion--active')) {
+                active.push(e);
+            }
+        });
+
+        return active;
     }
 
     /**
@@ -103,6 +161,46 @@ export class Accordion
                     this.activate(this.options.openOnLoad);
                 }
             }
+        }
+    }
+
+    resized() {
+        var valid = true;
+
+        if (this.options.disable) {
+            setTimeout(() => {
+                if (this.breakpoint.old != window.matchMedia(this.options.disable).matches) {
+                    if (window.matchMedia(this.options.disable).matches) {
+                        if (this.active) {
+                            this.element.forEach((e) => {
+                                e.classList.remove('accordion--invalid');
+                            });
+                            this.active.forEach((e) => {
+                                this.activate(e);
+                            });
+                        }
+                    } else {
+                        this.active = this.getActiveElements();
+                        if (this.active) {
+                            this.element.forEach((e) => {
+                                e.classList.add('accordion--invalid');
+                                setTimeout(() => {
+                                    e.querySelector('.accordion__wrap').style.maxHeight = null;
+                                }, this.options.preDelay + this.options.postDelay);
+                            });
+                            this.active.forEach((e) => {
+                                this.deactivate(e);
+                            });
+                        }
+                    }
+                }
+                this.breakpoint.old = window.matchMedia(this.options.disable).matches;
+            }, this.options.preDelay + this.options.postDelay);
+        }
+
+        // On window resize
+        if (typeof this.options.afterResize == 'function') {
+            this.options.afterResize();
         }
     }
 
