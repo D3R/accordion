@@ -78,6 +78,7 @@ export class Accordion
                         if (this.active) {
                             this.element.forEach((e) => {
                                 e.classList.add('accordion--invalid');
+                                e.querySelector('.accordion__body').removeAttribute('hidden');
                                 if (this.options.retainHead) {
                                     e.classList.add('accordion--retain-head');
                                 }
@@ -191,6 +192,7 @@ export class Accordion
                         if (this.active) {
                             this.element.forEach((e) => {
                                 e.classList.add('accordion--invalid');
+                                e.querySelector('.accordion__body').removeAttribute('hidden');
                                 if (this.options.retainHead) {
                                     e.classList.add('accordion--retain-head');
                                 }
@@ -288,7 +290,7 @@ export class Accordion
             return;
         }
 
-        this.updateTrigger();
+        this.updateTrigger(element);
 
         setTimeout(function() {
             element.classList.add('accordion--active');
@@ -348,7 +350,7 @@ export class Accordion
     close(element, clicked) {
         let self = this;
 
-        this.updateTrigger();
+        this.updateTrigger(element);
 
         setTimeout(function() {
             element.classList.remove('accordion--active');
@@ -426,7 +428,7 @@ export class Accordion
     /**
      * Update the trigger
      */
-    updateTrigger() {
+    updateTrigger(element) {
         let trigger = element.querySelector(this.options.selectorTrigger);
         this.toggleAriaExpanded(trigger);
     }
