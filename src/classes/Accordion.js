@@ -180,6 +180,7 @@ export class Accordion
                         if (this.active) {
                             this.element.forEach((e) => {
                                 e.classList.remove('accordion--invalid');
+                                e.querySelector('.accordion__body').setAttribute('hidden', true);
                                 e.querySelector(this.options.selectorTrigger).removeAttribute('tabIndex');
                                 if (this.options.retainHead) {
                                     e.classList.remove('accordion--retain-head');
