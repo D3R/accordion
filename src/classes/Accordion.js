@@ -79,6 +79,7 @@ export class Accordion
                             this.element.forEach((e) => {
                                 e.classList.add('accordion--invalid');
                                 e.querySelector('.accordion__body').removeAttribute('hidden');
+                                e.querySelector(this.options.selectorTrigger).setAttribute('tabIndex', -1);
                                 if (this.options.retainHead) {
                                     e.classList.add('accordion--retain-head');
                                 }
@@ -179,6 +180,7 @@ export class Accordion
                         if (this.active) {
                             this.element.forEach((e) => {
                                 e.classList.remove('accordion--invalid');
+                                e.querySelector(this.options.selectorTrigger).removeAttribute('tabIndex');
                                 if (this.options.retainHead) {
                                     e.classList.remove('accordion--retain-head');
                                 }
@@ -193,6 +195,7 @@ export class Accordion
                             this.element.forEach((e) => {
                                 e.classList.add('accordion--invalid');
                                 e.querySelector('.accordion__body').removeAttribute('hidden');
+                                e.querySelector(this.options.selectorTrigger).setAttribute('tabIndex', -1);
                                 if (this.options.retainHead) {
                                     e.classList.add('accordion--retain-head');
                                 }
