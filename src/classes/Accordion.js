@@ -25,6 +25,7 @@ export class Accordion
             animate: true,
             toggling: true,
             disable: null,
+            retainHead: false,
             beforeOpen: function(element) {},
             afterOpen: function(element) {},
             beforeClose: function(element) {},
@@ -77,6 +78,9 @@ export class Accordion
                         if (this.active) {
                             this.element.forEach((e) => {
                                 e.classList.add('accordion--invalid');
+                                if (this.options.retainHead) {
+                                    e.classList.add('accordion--retain-head');
+                                }
                                 setTimeout(() => {
                                     e.querySelector('.accordion__wrap').style.maxHeight = null;
                                 }, this.options.preDelay + this.options.postDelay);
@@ -110,7 +114,7 @@ export class Accordion
                 return;
             }
 
-            let element = e.parentNode;
+            let element = e.parentNode.parentNode;
 
             if (e.getAttribute('data-target')) {
                 element = document.querySelector(e.getAttribute('data-target'));
@@ -174,6 +178,9 @@ export class Accordion
                         if (this.active) {
                             this.element.forEach((e) => {
                                 e.classList.remove('accordion--invalid');
+                                if (this.options.retainHead) {
+                                    e.classList.remove('accordion--retain-head');
+                                }
                             });
                             this.active.forEach((e) => {
                                 this.activate(e);
@@ -184,6 +191,9 @@ export class Accordion
                         if (this.active) {
                             this.element.forEach((e) => {
                                 e.classList.add('accordion--invalid');
+                                if (this.options.retainHead) {
+                                    e.classList.add('accordion--retain-head');
+                                }
                                 setTimeout(() => {
                                     e.querySelector('.accordion__wrap').style.maxHeight = null;
                                 }, this.options.preDelay + this.options.postDelay);
@@ -255,6 +265,7 @@ export class Accordion
      * @param {Element} element
      */
     beforeOpen(element, clicked) {
+        element.querySelector('.accordion__body').removeAttribute('hidden');
         if (this.options.limit == 'group') {
             this.closeOthers(element);
         } else if (this.options.limit == 'page') {
@@ -276,6 +287,8 @@ export class Accordion
         if (element.classList.contains('accordion--active')) {
             return;
         }
+
+        this.updateTrigger();
 
         setTimeout(function() {
             element.classList.add('accordion--active');
@@ -335,6 +348,8 @@ export class Accordion
     close(element, clicked) {
         let self = this;
 
+        this.updateTrigger();
+
         setTimeout(function() {
             element.classList.remove('accordion--active');
             if (self.options.animate) {
@@ -354,6 +369,7 @@ export class Accordion
         setTimeout(function() {
             if (clicked && typeof self.options.afterClose == 'function') {
                 self.options.afterClose(element);
+                element.querySelector('.accordion__body').setAttribute('hidden', true);
             }
         }, this.options.postDelay);
     }
@@ -404,6 +420,28 @@ export class Accordion
                     window.scrollTo(0, element.offsetTop);
                 }
             }
+        }
+    }
+
+    /**
+     * Update the trigger
+     */
+    updateTrigger() {
+        let trigger = element.querySelector(this.options.selectorTrigger);
+        this.toggleAriaExpanded(trigger);
+    }
+
+    /**
+     * Update the aria-expaneded attribute of the trigger
+     *
+     * @param {Element} element
+     */
+    toggleAriaExpanded(button) {
+        var attr = 'aria-expanded';
+        if (button.getAttribute(attr) == 'true') {
+            button.setAttribute(attr, 'false');
+        } else {
+            button.setAttribute(attr, 'true');
         }
     }
 }
