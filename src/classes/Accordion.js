@@ -76,7 +76,7 @@ export class Accordion
 
                     if (!window.matchMedia(this.options.disable).matches) {
                         if (this.active) {
-                            this.element.forEach((e) => {
+                            for (let e of this.element) {
                                 e.classList.add('accordion--invalid');
                                 e.querySelector('.accordion__body').removeAttribute('hidden');
                                 e.querySelector(this.options.selectorTrigger).setAttribute('tabIndex', -1);
@@ -86,10 +86,10 @@ export class Accordion
                                 setTimeout(() => {
                                     e.querySelector('.accordion__wrap').style.maxHeight = null;
                                 }, this.options.preDelay + this.options.postDelay);
-                            });
-                            this.active.forEach((e) => {
+                            }
+                            for (let e of this.active) {
                                 this.deactivate(e);
-                            });
+                            }
                         }
                     }
                 }
@@ -139,11 +139,11 @@ export class Accordion
     getActiveElements() {
         let active = [];
 
-        this.element.forEach((e) => {
+        for (let e of this.element) {
             if (e.classList.contains('accordion--active')) {
                 active.push(e);
             }
-        });
+        }
 
         return active;
     }
@@ -178,22 +178,22 @@ export class Accordion
                 if (this.breakpoint.old != window.matchMedia(this.options.disable).matches) {
                     if (window.matchMedia(this.options.disable).matches) {
                         if (this.active) {
-                            this.element.forEach((e) => {
+                            for (let e of this.element) {
                                 e.classList.remove('accordion--invalid');
                                 e.querySelector('.accordion__body').setAttribute('hidden', true);
                                 e.querySelector(this.options.selectorTrigger).removeAttribute('tabIndex');
                                 if (this.options.retainHead) {
                                     e.classList.remove('accordion--retain-head');
                                 }
-                            });
-                            this.active.forEach((e) => {
+                            }
+                            for (let e of this.active) {
                                 this.activate(e);
-                            });
+                            }
                         }
                     } else {
                         this.active = this.getActiveElements();
                         if (this.active) {
-                            this.element.forEach((e) => {
+                            for (let e of this.element) {
                                 e.classList.add('accordion--invalid');
                                 e.querySelector('.accordion__body').removeAttribute('hidden');
                                 e.querySelector(this.options.selectorTrigger).setAttribute('tabIndex', -1);
@@ -203,10 +203,10 @@ export class Accordion
                                 setTimeout(() => {
                                     e.querySelector('.accordion__wrap').style.maxHeight = null;
                                 }, this.options.preDelay + this.options.postDelay);
-                            });
-                            this.active.forEach((e) => {
+                            }
+                            for (let e of this.active) {
                                 this.deactivate(e);
-                            });
+                            }
                         }
                     }
                 }
