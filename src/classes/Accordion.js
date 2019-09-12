@@ -130,7 +130,13 @@ export class Accordion
         });
 
         // On window resize
-        window.onresize = debounce(this.resized.bind(this), 200);
+        window.onresize = debounce(this.handleResize, 200);
+    }
+
+    handleResize() {
+        for (let e of window.accordionResize) {
+            e.resized();
+        }
     }
 
     /**
