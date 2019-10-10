@@ -26,10 +26,13 @@
             display: none;
         }
 
-        .accordion--animate:not(.accordion--invalid) & {
+        .accordion:not(.accordion--invalid) & {
             display: block;
             max-height: 0;
             overflow: hidden;
+        }
+
+        .accordion--animate:not(.accordion--invalid) & {
             transition: max-height .5s ease;
         }
     }

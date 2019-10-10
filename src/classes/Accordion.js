@@ -304,9 +304,7 @@ export class Accordion
 
         setTimeout(function() {
             element.classList.add('accordion--active');
-            if (self.options.animate) {
-                element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
-            }
+            element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
             if (self.options.scrollTo && !self.options.animate && clicked) {
                 window.scrollTo(0, element.offsetTop);
             }
@@ -322,9 +320,7 @@ export class Accordion
         let self = this;
 
         setTimeout(function() {
-            if (self.options.animate) {
-                element.querySelector('.accordion__wrap').style.maxHeight = 'none';
-            }
+            element.querySelector('.accordion__wrap').style.maxHeight = 'none';
             if (clicked) {
                 if (typeof self.options.afterOpen == 'function') {
                     self.options.afterOpen(element);
@@ -347,9 +343,7 @@ export class Accordion
         if (clicked && typeof this.options.beforeClose == 'function') {
             this.options.beforeClose(element);
         }
-        if (this.options.animate) {
-            element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
-        }
+        element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
     }
 
     /**
@@ -364,9 +358,7 @@ export class Accordion
 
         setTimeout(function() {
             element.classList.remove('accordion--active');
-            if (self.options.animate) {
-                element.querySelector('.accordion__wrap').style.maxHeight = 0;
-            }
+            element.querySelector('.accordion__wrap').style.maxHeight = 0;
         }, this.options.preDelay);
     }
 
