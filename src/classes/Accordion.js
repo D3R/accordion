@@ -90,8 +90,10 @@ export class Accordion
     loaded() {
         if (window.location.hash) {
             // If there is a URL hash, and the element concerned is an accordion, then activate it
-            if (document.querySelector(window.location.hash).classList.contains('accordion')) {
-                this.activate(document.querySelector(window.location.hash));
+            const el = document.querySelector(window.location.hash);
+
+            if (el && el.classList.contains('accordion')) {
+                this.activate(el);
             }
         } else if (this.options.openOnLoad) {
             if (typeof this.options.openOnLoad == 'boolean' && this.options.openOnLoad) {
