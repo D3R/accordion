@@ -94,8 +94,11 @@ export class Accordion
 
             if (el && el.classList.contains('accordion')) {
                 this.activate(el);
+                return;
             }
-        } else if (this.options.openOnLoad) {
+        }
+
+        if (this.options.openOnLoad) {
             if (typeof this.options.openOnLoad == 'boolean' && this.options.openOnLoad) {
                 // If openOnLoad is set to true, then activate the first accordion on the page
                 this.activate(this.element[0]);
