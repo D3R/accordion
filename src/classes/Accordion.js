@@ -176,7 +176,7 @@ export class Accordion
      * Kick things off
      */
     loaded() {
-        if (window.location.hash) {
+        if (window.location.hash && window.location.hash !== '#') {
             let el = document.querySelector(window.location.hash);
 
             if (el && el.classList.contains('accordion')) {
