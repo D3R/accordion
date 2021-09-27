@@ -177,11 +177,15 @@ export class Accordion
      */
     loaded() {
         if (window.location.hash && window.location.hash !== '#') {
-            let el = document.querySelector(window.location.hash);
+            try {
+                let el = document.querySelector(window.location.hash);
 
-            if (el && el.classList.contains('accordion')) {
-                this.activate(el);
-                return;
+                if (el && el.classList.contains('accordion')) {
+                    this.activate(el);
+                    return;
+                }
+            } catch(e) {
+                console.log('Your selector is invalid');
             }
         } else if (this.options.openOnLoad) {
             if (typeof this.options.openOnLoad == 'boolean' && this.options.openOnLoad) {
