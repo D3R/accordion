@@ -88,9 +88,9 @@ export class Accordion
      * Kick things off
      */
     loaded() {
-        if (window.location.hash) {
+        if (window.location.hash && window.location.hash.length > 1) {
             // If there is a URL hash, and the element concerned is an accordion, then activate it
-            const el = document.querySelector(window.location.hash);
+            const el = document.getElementById(window.location.hash.substring(1));
 
             if (el && el.classList.contains('accordion')) {
                 this.activate(el);

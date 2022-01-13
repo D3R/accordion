@@ -145,3 +145,10 @@ afterOpen | function | empty | A function to be called after the accordion is op
 beforeClose | function | empty | A function to be called before the accordion is closed
 afterClose | function | empty | A function to be called after the accordion is closed
 afterResize | function | empty | A function to be called after the window has been resized
+
+# Package Development
+Run this command to re-compile the code:
+
+```sh
+npm run build
+```
