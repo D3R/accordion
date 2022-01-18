@@ -1,6 +1,6 @@
 .accordion {
 
-    & + .accordion {
+    &:not(.accordion--bare) + .accordion:not(.accordion--bare) {
         margin-top: 1px;
     }
 }
@@ -8,18 +8,31 @@
 .accordion--active {}
 
     .accordion__head {
-        padding: 10px 20px;
-        cursor: pointer;
-        background: $c-accordion-bg;
+
+        .accordion:not(.accordion--invalid):not(.accordion--bare) & {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: $c-accordion-bg;
+        }
+
+        .accordion--invalid:not(.accordion--retain-head) & {
+            display: none;
+        }
     }
 
     .accordion__wrap {
-        display: none;
 
-        .accordion--animate & {
+        .accordion:not(.accordion--invalid) & {
+            display: none;
+        }
+
+        .accordion:not(.accordion--invalid) & {
             display: block;
             max-height: 0;
             overflow: hidden;
+        }
+
+        .accordion--animate:not(.accordion--invalid) & {
             transition: max-height .5s ease;
         }
     }
@@ -33,7 +46,10 @@
     }
 
         .accordion__body {
-            margin-top: 1px;
-            padding: 20px;
-            background: $c-accordion-bg;
+
+            .accordion:not(.accordion--invalid):not(.accordion--bare) & {
+                margin-top: 1px;
+                padding: 20px;
+                background: $c-accordion-bg;
+            }
         }

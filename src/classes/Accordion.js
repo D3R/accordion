@@ -24,6 +24,8 @@ export class Accordion
             openOnLoad: false,
             animate: true,
             toggling: true,
+            disable: null,
+            retainHead: false,
             beforeOpen: function(element) {},
             afterOpen: function(element) {},
             beforeClose: function(element) {},
@@ -35,21 +37,39 @@ export class Accordion
 
         this.element = document.querySelectorAll(this.options.selector);
 
+        this.breakpoint = {
+            old: null,
+            new: window.matchMedia(this.options.disable).matches
+        };
+
         if (this.element.length == 0) {
             return;
         }
 
-        this.checkAnimation();
         this.bind();
+    }
+
+    /**
+     * Determine if the accordion should be transitioned or not
+     */
+    shouldTransition() {
+        if (this.options.disable) {
+            return window.matchMedia(this.options.disable).matches;
+        }
+        return true;
     }
 
     /**
      * Decide if the accordion will be animated or not
      */
     checkAnimation() {
-        if (this.options.animate) {
+        if (this.options.animate && this.shouldTransition()) {
             for (const el of this.element) {
                 el.classList.add('accordion--animate');
+            }
+        } else {
+            for (const el of this.element) {
+                el.classList.remove('accordion--animate');
             }
         }
     }
@@ -58,14 +78,63 @@ export class Accordion
      * Bind all relevant events
      */
     bind() {
+        var valid = true;
 
-        // On page load
-        this.loaded();
+        if (this.options.disable) {
+            if (this.shouldTransition()) {
+                setTimeout(() => {
+                    if (this.breakpoint.old != window.matchMedia(this.options.disable).matches) {
+                        if (!this.active) {
+                            this.active = this.getActiveElements();
+                        }
+                    }
+
+                    this.breakpoint.old = window.matchMedia(this.options.disable).matches;
+                }, this.options.preDelay + this.options.postDelay);
+            } else {
+                if (this.breakpoint.old != window.matchMedia(this.options.disable).matches) {
+                    setTimeout(() => {
+                        if (!this.active) {
+                            this.active = this.getActiveElements();
+                        }
+                        for (let e of this.active) {
+                            this.deactivate(e);
+                        }
+                    }, this.options.preDelay + this.options.postDelay);
+
+                    for (let e of this.element) {
+                        e.classList.add('accordion--invalid');
+                        e.querySelector('.accordion__body').removeAttribute('hidden');
+                        e.querySelector(this.options.selectorTrigger).setAttribute('tabIndex', -1);
+                        if (this.options.retainHead) {
+                            e.classList.add('accordion--retain-head');
+                        }
+                    }
+                }
+
+                this.breakpoint.old = window.matchMedia(this.options.disable).matches;
+            }
+        }
+
+        if (valid) {
+            // On page load
+            this.loaded();
+        }
 
         // On click
         this.delegate('click', this.options.selectorTrigger, (e) => {
 
-            let element = e.parentNode;
+            if (this.options.disable) {
+                if (!window.matchMedia(this.options.disable).matches) {
+                    return;
+                }
+            }
+
+            if (!valid) {
+                return;
+            }
+
+            let element = e.parentNode.parentNode;
 
             if (e.getAttribute('data-target')) {
                 element = document.querySelector(e.getAttribute('data-target'));
@@ -79,19 +148,44 @@ export class Accordion
         });
 
         // On window resize
-        if (typeof this.options.afterResize == 'function') {
-            window.onresize = debounce(this.options.afterResize, 200);
+        window.onresize = debounce(this.handleResize, 200);
+    }
+
+    handleResize() {
+        for (let e of window.accordionResize) {
+            e.resized();
         }
+    }
+
+    /**
+     * Get the active items within the group
+     */
+    getActiveElements() {
+        let active = [];
+
+        for (let e of this.element) {
+            if (e.classList.contains('accordion--active')) {
+                active.push(e);
+            }
+        }
+
+        return active;
     }
 
     /**
      * Kick things off
      */
     loaded() {
-        if (window.location.hash) {
-            // If there is a URL hash, and the element concerned is an accordion, then activate it
-            if (document.querySelector(window.location.hash).classList.contains('accordion')) {
-                this.activate(document.querySelector(window.location.hash));
+        if (window.location.hash && window.location.hash !== '#') {
+            try {
+                let el = document.querySelector(window.location.hash);
+
+                if (el && el.classList.contains('accordion')) {
+                    this.activate(el);
+                    return;
+                }
+            } catch(e) {
+                console.log('Your selector is invalid');
             }
         } else if (this.options.openOnLoad) {
             if (typeof this.options.openOnLoad == 'boolean' && this.options.openOnLoad) {
@@ -106,6 +200,59 @@ export class Accordion
         }
     }
 
+    resized() {
+        var valid = true;
+
+        if (this.options.disable) {
+            if (this.shouldTransition()) {
+                setTimeout(() => {
+                    if (this.breakpoint.old != window.matchMedia(this.options.disable).matches) {
+                        if (this.active) {
+                            for (let e of this.element) {
+                                e.classList.remove('accordion--invalid');
+                                e.querySelector('.accordion__body').setAttribute('hidden', true);
+                                e.querySelector(this.options.selectorTrigger).removeAttribute('tabIndex');
+                                if (this.options.retainHead) {
+                                    e.classList.remove('accordion--retain-head');
+                                }
+                            }
+                            for (let e of this.active) {
+                                this.activate(e);
+                            }
+                        }
+                    }
+                    this.breakpoint.old = window.matchMedia(this.options.disable).matches;
+                }, this.options.preDelay + this.options.postDelay);
+            } else {
+                if (this.breakpoint.old != window.matchMedia(this.options.disable).matches) {
+                    this.active = this.getActiveElements();
+                    if (this.active) {
+                        for (let e of this.element) {
+                            e.classList.add('accordion--invalid');
+                            e.querySelector('.accordion__body').removeAttribute('hidden');
+                            e.querySelector(this.options.selectorTrigger).setAttribute('tabIndex', -1);
+                            if (this.options.retainHead) {
+                                e.classList.add('accordion--retain-head');
+                            }
+                            setTimeout(() => {
+                                e.querySelector('.accordion__wrap').style.maxHeight = null;
+                            }, this.options.preDelay);
+                        }
+                        for (let e of this.active) {
+                            this.deactivate(e);
+                        }
+                    }
+                }
+                this.breakpoint.old = window.matchMedia(this.options.disable).matches;
+            }
+        }
+
+        // On window resize
+        if (typeof this.options.afterResize == 'function') {
+            this.options.afterResize();
+        }
+    }
+
     /**
      * Activate the accordion
      *
@@ -113,6 +260,7 @@ export class Accordion
      * @param {Boolean} clicked
      */
     activate(element, clicked) {
+        this.checkAnimation();
         this.beforeOpen(element, clicked);
         this.open(element, clicked);
         this.afterOpen(element, clicked);
@@ -125,6 +273,7 @@ export class Accordion
      * @param {Boolean} clicked
      */
     deactivate(element, clicked) {
+        this.checkAnimation();
         this.beforeClose(element, clicked);
         this.close(element, clicked);
         this.afterClose(element, clicked);
@@ -157,6 +306,7 @@ export class Accordion
      * @param {Element} element
      */
     beforeOpen(element, clicked) {
+        element.querySelector('.accordion__body').removeAttribute('hidden');
         if (this.options.limit == 'group') {
             this.closeOthers(element);
         } else if (this.options.limit == 'page') {
@@ -179,9 +329,11 @@ export class Accordion
             return;
         }
 
-        setTimeout(function() {
+        this.updateTrigger(element);
+
+        setTimeout(() => {
             element.classList.add('accordion--active');
-            if (self.options.animate) {
+            if (this.shouldTransition()) {
                 element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
             }
             if (self.options.scrollTo && !self.options.animate && clicked) {
@@ -198,8 +350,8 @@ export class Accordion
     afterOpen(element, clicked) {
         let self = this;
 
-        setTimeout(function() {
-            if (self.options.animate) {
+        setTimeout(() => {
+            if (this.shouldTransition()) {
                 element.querySelector('.accordion__wrap').style.maxHeight = 'none';
             }
             if (clicked) {
@@ -224,9 +376,7 @@ export class Accordion
         if (clicked && typeof this.options.beforeClose == 'function') {
             this.options.beforeClose(element);
         }
-        if (this.options.animate) {
-            element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
-        }
+        element.querySelector('.accordion__wrap').style.maxHeight = element.querySelector('.accordion__body').clientHeight + 'px';
     }
 
     /**
@@ -237,9 +387,11 @@ export class Accordion
     close(element, clicked) {
         let self = this;
 
-        setTimeout(function() {
+        this.updateTrigger(element);
+
+        setTimeout(() => {
             element.classList.remove('accordion--active');
-            if (self.options.animate) {
+            if (this.shouldTransition()) {
                 element.querySelector('.accordion__wrap').style.maxHeight = 0;
             }
         }, this.options.preDelay);
@@ -253,9 +405,10 @@ export class Accordion
     afterClose(element, clicked) {
         let self = this;
 
-        setTimeout(function() {
+        setTimeout(() => {
             if (clicked && typeof self.options.afterClose == 'function') {
                 self.options.afterClose(element);
+                element.querySelector('.accordion__body').setAttribute('hidden', true);
             }
         }, this.options.postDelay);
     }
@@ -306,6 +459,28 @@ export class Accordion
                     window.scrollTo(0, element.offsetTop);
                 }
             }
+        }
+    }
+
+    /**
+     * Update the trigger
+     */
+    updateTrigger(element) {
+        let trigger = element.querySelector(this.options.selectorTrigger);
+        this.toggleAriaExpanded(trigger);
+    }
+
+    /**
+     * Update the aria-expaneded attribute of the trigger
+     *
+     * @param {Element} element
+     */
+    toggleAriaExpanded(button) {
+        var attr = 'aria-expanded';
+        if (button.getAttribute(attr) == 'true') {
+            button.setAttribute(attr, 'false');
+        } else {
+            button.setAttribute(attr, 'true');
         }
     }
 }
